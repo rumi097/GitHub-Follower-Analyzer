@@ -6,13 +6,13 @@ let followersNotFollowing = [];
 let followingNotFollowers = [];
 let followersFollowing = [];
 
-// Initialize extension
+// Initialize extension - Fast render first
 document.addEventListener('DOMContentLoaded', function() {
-    // Set default username
+    // Set default username immediately
     document.getElementById('github-username').value = githubUsername;
     
-    // Load saved data if exists
-    loadSavedData();
+    // Load saved data asynchronously (non-blocking)
+    setTimeout(() => loadSavedData(), 0);
     
     // Form submission
     document.getElementById('github-form').addEventListener('submit', function(e) {
@@ -111,13 +111,17 @@ async function analyzeGitHub(username, accessToken) {
         showResultsSection();
     } catch (error) {
         console.error('Error:', error);
-        alert('Error: ' + error.message + '\nPlease check the username and try again.');
+        let errorMsg = 'Error: ' + error.message;
+        if (error.name === 'AbortError') {
+            errorMsg = 'Request timed out. Please check your internet connection and try again.';
+        }
+        alert(errorMsg + '\n\nPlease check the username and try again.');
         showFormSection();
     }
 }
 
-// Fetch with authentication
-function fetchWithAuth(url, accessToken) {
+// Fetch with authentication and timeout
+function fetchWithAuth(url, accessToken, timeout = 10000) {
     const headers = {
         'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28'
@@ -127,7 +131,14 @@ function fetchWithAuth(url, accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
     }
     
-    return fetch(url, { headers });
+    // Add timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    return fetch(url, { 
+        headers,
+        signal: controller.signal 
+    }).finally(() => clearTimeout(timeoutId));
 }
 
 // Fetch all paginated data
@@ -272,34 +283,50 @@ function saveData() {
     chrome.storage.local.set({ lastAnalysis: data });
 }
 
-// Load saved data
+// Load saved data (optimized with timeout and error handling)
 function loadSavedData() {
-    chrome.storage.local.get(['lastAnalysis'], function(result) {
-        if (result.lastAnalysis && result.lastAnalysis.username) {
-            const data = result.lastAnalysis;
+    try {
+        // Add timeout to prevent hanging
+        const timeoutId = setTimeout(() => {
+            console.log('Storage load timeout - showing fresh form');
+        }, 1000);
+        
+        chrome.storage.local.get(['lastAnalysis'], function(result) {
+            clearTimeout(timeoutId);
             
-            // Check if data is less than 24 hours old
-            const hoursSinceAnalysis = (Date.now() - data.timestamp) / (1000 * 60 * 60);
-            
-            if (hoursSinceAnalysis < 24) {
-                githubUsername = data.username;
-                followerNames = data.followerNames || [];
-                followingNames = data.followingNames || [];
-                followersNotFollowing = data.followersNotFollowing || [];
-                followingNotFollowers = data.followingNotFollowers || [];
-                followersFollowing = data.followersFollowing || [];
-                
-                // Create user object for display
-                const user = {
-                    login: data.username,
-                    avatar_url: `https://github.com/${data.username}.png`
-                };
-                
-                displayUserProfile(user);
-                displayStats();
-                displayLists();
-                showResultsSection();
+            if (chrome.runtime.lastError) {
+                console.error('Storage error:', chrome.runtime.lastError);
+                return;
             }
-        }
-    });
+            
+            if (result.lastAnalysis && result.lastAnalysis.username) {
+                const data = result.lastAnalysis;
+                
+                // Check if data is less than 24 hours old
+                const hoursSinceAnalysis = (Date.now() - data.timestamp) / (1000 * 60 * 60);
+                
+                if (hoursSinceAnalysis < 24 && data.followerNames && data.followerNames.length > 0) {
+                    githubUsername = data.username;
+                    followerNames = data.followerNames || [];
+                    followingNames = data.followingNames || [];
+                    followersNotFollowing = data.followersNotFollowing || [];
+                    followingNotFollowers = data.followingNotFollowers || [];
+                    followersFollowing = data.followersFollowing || [];
+                    
+                    // Create user object for display
+                    const user = {
+                        login: data.username,
+                        avatar_url: `https://github.com/${data.username}.png`
+                    };
+                    
+                    displayUserProfile(user);
+                    displayStats();
+                    displayLists();
+                    showResultsSection();
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error loading saved data:', error);
+    }
 }

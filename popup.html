@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>GitHub Follower Analyzer</title>
     <link rel="stylesheet" href="css/popup.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
-        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome removed for faster load - using Unicode symbols instead -->
 </head>
 <body>
     <!-- Loading overlay -->
@@ -18,7 +16,7 @@
     <!-- Form Section -->
     <div id="form-section">
         <div class="header">
-            <i class="fa-brands fa-github"></i>
+            <span class="icon">🐙</span>
             <h2>GitHub Follower Analyzer</h2>
         </div>
         
@@ -36,7 +34,7 @@
             </div>
             
             <button type="submit" class="btn btn-primary">
-                <i class="fa fa-search"></i> Analyze
+                🔍 Analyze
             </button>
         </form>
     </div>
@@ -45,7 +43,7 @@
     <div id="results-section" style="display: none;">
         <div class="header">
             <button id="btn-back" class="btn-icon" title="Search new user">
-                <i class="fa fa-arrow-left"></i>
+                ←
             </button>
             <h2>Results</h2>
         </div>
@@ -56,8 +54,8 @@
             <div class="user-info">
                 <h3 id="user-name">Username</h3>
                 <div class="user-stats">
-                    <span><i class="fas fa-users"></i> <span id="followers-count">0</span> followers</span>
-                    <span><i class="fas fa-user-plus"></i> <span id="following-count">0</span> following</span>
+                    <span>👥 <span id="followers-count">0</span> followers</span>
+                    <span>➕ <span id="following-count">0</span> following</span>
                 </div>
             </div>
         </div>
@@ -81,13 +79,13 @@
         <!-- Action Buttons -->
         <div class="action-buttons">
             <button id="btn-sort-asc" class="btn btn-small" title="Sort A-Z">
-                <i class="fas fa-arrow-up"></i> A-Z
+                ↑ A-Z
             </button>
             <button id="btn-sort-desc" class="btn btn-small" title="Sort Z-A">
-                <i class="fas fa-arrow-down"></i> Z-A
+                ↓ Z-A
             </button>
             <button id="btn-download" class="btn btn-small" title="Download JSON">
-                <i class="fas fa-download"></i> JSON
+                ⬇ JSON
             </button>
         </div>
 
