@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Github Follower Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="icon" type="image/png" href="img/fav.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS bundle with Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Creepster&family=Gabarito&family=Kanit:wght@100;200;400;500;600;700;800&family=Roboto+Mono:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- sweetAlert -->
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+
+    <!-- font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <!-- navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg bg-black fixed-top" style="background-color: black;">
+            <div class="container-fluid">
+                <a class="navbar-brand" style=" color:chartreuse; font-size: 100%;">
+                    <i class="fa-brands fa-github ml-3"></i> Github Follower Analyzer</a>
+            </div>
+        </nav>
+    </header>
+
+    <img id="bg" src="img/bg2.svg" alt="Background Image">
+
+    <!-- loading -->
+    <div id="loading-container">
+        <div class="bg-black d-flex align-items-center justify-content-center"
+            style="position: fixed; width: 100%; height: 100%; z-index: 100;">
+            <img src="img/loading.gif" style="width: 10%;" class="img-fluid" alt="Loading...">
+        </div>
+    </div>
+
+    <!-- form -->
+    <div id="form">
+        <div class="d-flex align-items-center justify-content-center"
+            style="position: fixed; width: 100%; height: 100%;">
+
+            <form id="github-form" class="col-lg-4 dark-container m-3">
+                <div class="m-1">
+                    <div class="col text-center">
+                        <p>
+                            <img src="img/fav.ico" width="20%" alt="user profile">
+                        </p>
+                        <p class="mb-2" style="color: rgb(252, 252, 252);">Type GitHub Username</p>
+                    </div>
+
+                    <div class="form-group row">
+                        <input type="text" class="form-control dark-input" id="github-username"
+                            placeholder="Github Username" name="github-username" required>
+                        <input type="text" class="form-control dark-input" id="github-access-token"
+                            placeholder="Github Fine Grained Access Token (optional)" name="github-access-token" title="Rate limit for unauthenticated requests is 60 requests per hour. Access Token Required for accounts with large follower/following counts." optional>
+                    </div>
+                    <div class="form-group row">
+                        <button type="submit" class="btn btn-outline-warning btn-block"> <i class="fa fa-search"
+                                aria-hidden="true"></i>
+                            Show</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <main>
+        <br>
+        <br>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-4">
+                    <!-- Search New User button -->
+                    <div class="dark-container" id="searchNew">
+                        <button class="btn btn-sm btn-outline-warning btn-block">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            Search New User</button>
+                    </div>
+
+                    <!-- user details followers and followings -->
+                    <div class="dark-container" id="userDetails">
+                        <!-- user details -->
+                        <div class="row d-flex justify-content-center">
+                            <div class="col d-inline text-center">
+                                <p>
+                                    <img id="userImage" src="img/fav.ico" width="20%" style="border-radius: 50%; "
+                                        alt="user profile">
+                                </p>
+                                <span id="userName"> Username</span>
+                            </div>
+                        </div>
+
+                        <hr class="bg-success">
+
+                        <div class="row">
+                            <!-- followers -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 m-0 text-center">
+                                <button id="btnFollowers"
+                                    class="btn btn-outline-success btn-sm w-100 d-block bg-transparent"
+                                    data-bs-toggle="modal" data-bs-target="#allFollowersModal">
+                                    <p style="color: chartreuse; margin:0" class="mr-3">
+                                        <i class="fas fa-users"></i> Followers
+                                        <span id="followers"
+                                            style="font-weight: bold; color: rgb(255, 255, 255);"></span>
+                                    </p>
+                                </button>
+                            </div>
+
+                            <!-- followings -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 m-0 text-center">
+                                <button id="btnFollowings"
+                                    class="btn btn-outline-success btn-sm w-100 d-block bg-transparent"
+                                    data-bs-toggle="modal" data-bs-target="#allFollowingsModal">
+                                    <p style="color: chartreuse;  margin:0" class="mr-3"> <i class="fas fa-users"></i>
+                                        Following <span id="following"
+                                            style="font-weight: bold; color: rgb(255, 255, 255);"> </span>
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- sorting -->
+                        <div class="row" style="padding-top:10px">
+                            <div class="col-lg-6 col-md-6 col-sm-12 m-0 text-center">
+                                <button id="btnSortIDAsc"
+                                    class="btn btn-outline-success btn-sm w-100 d-block bg-transparent">
+                                    <p style="color: chartreuse; margin:0" class="mr-3">
+                                        <i class="fas fa-arrow-up"></i> Sort ID Acsend
+                                    </p>
+                                </button>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12 m-0 text-center">
+                                <button id="btnSortIDDesc"
+                                    class="btn btn-outline-success btn-sm w-100 d-block bg-transparent">
+                                    <p style="color: chartreuse; margin:0" class="mr-3">
+                                        <i class="fas fa-arrow-down"></i> Sort ID Decsend
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row" style="padding-top:10px">
+                            <div class="col-lg-6 col-md-6 col-sm-12 m-0 text-center">
+                                <button id="btnSortAsc"
+                                    class="btn btn-outline-success btn-sm w-100 d-block bg-transparent">
+                                    <p style="color: chartreuse; margin:0" class="mr-3">
+                                        <i class="fas fa-arrow-up"></i> Sort Name Acsend
+                                    </p>
+                                </button>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12 m-0 text-center">
+                                <button id="btnSortDesc"
+                                    class="btn btn-outline-success btn-sm w-100 d-block bg-transparent">
+                                    <p style="color: chartreuse; margin:0" class="mr-3">
+                                        <i class="fas fa-arrow-down"></i> Sort Name Decsend
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- download as JSON! -->
+                        <div class="row" style="padding-top:10px">
+                            <div class="col-lg-6 col-md-6 col-sm-12 m-0 text-center">
+                                <button id="btnDownloadJSON"
+                                    class="btn btn-outline-success btn-sm w-100 d-block bg-transparent">
+                                    <p style="color: chartreuse; margin:0" class="mr-3">
+                                        <i class="fas fa-download"></i> Download as JSON
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr class="bg-success">
+
+                        <!-- summary -->
+                        <table id="summary">
+                            <tr style="color: chartreuse;">
+                                <td>Total Followers</td>
+                                <td>:</td>
+                                <td id="summary-total-followers">0</td>
+                            </tr>
+                            <tr>
+                                <td>Followed Back</td>
+                                <td>:</td>
+                                <td id="summary-followed-back">0</td>
+                            </tr>
+                            <tr>
+                                <td>Not Followed Back</td>
+                                <td>:</td>
+                                <td id="summary-not-followed-back">0</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <hr class="bg-success">
+                                </td>
+                                <td>
+                                    <hr class="bg-success">
+                                </td>
+                                <td>
+                                    <hr class="bg-success">
+                                </td>
+                            </tr>
+
+                            <tr style="color: chartreuse;">
+                                <td>Total Followings</td>
+                                <td>:</td>
+                                <td id="summary-total-followings">0</td>
+                            </tr>
+                            <tr>
+                                <td>Followings Who Follow Back</td>
+                                <td>:</td>
+                                <td id="summary-followings-who-follow-back">0</td>
+                            </tr>
+                            <tr>
+                                <td>Followings Not Followed Back</td>
+                                <td>:</td>
+                                <td id="summary-followings-not-followed-back">0</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- followers-following -->
+                    <div id="followers-following-div" class="dark-container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p style="color: rgb(255, 183, 0);"> <i class="fas fa-address-card"></i>
+                                    Followers Following <span id="followers-following-count"
+                                        style="font-weight: bold; color: rgb(255, 255, 255);"> </span>
+                                </p>
+
+                                <div id="textFollowersFollowing" style="font-size: smaller;"></div>
+
+                                <div id="followers-following" style="font-size: smaller;"> </div>
+
+                            </div>
+                            <div class="col-lg-12">
+                                <div id="pagination-followers-following"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- followers-not-following -->
+                <div id="followers-not-following-div" class="col-lg-4">
+                    <div class="dark-container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p style="color: rgb(255, 183, 0);"> <i class="fas fa-address-card"></i>
+                                    Followers but not Following <span id="followers-not-following-count"
+                                        style="font-weight: bold; color: rgb(255, 255, 255);"> </span>
+                                </p>
+
+                                <div id="textNotFollowing" style="font-size: smaller;"></div>
+
+                                <div id="followers-but-not-Following" style="font-size: smaller;"> </div>
+
+                            </div>
+                            <div class="col-lg-12">
+                                <div id="pagination-followers-but-not-Following"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- following-not-followers -->
+                <div id="following-not-followers-div" class="col-lg-4">
+                    <div class="dark-container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p style="color: rgb(255, 183, 0);"> <i class="fas fa-address-card"></i>
+                                    Following but not Followers <span id="following-not-followers-count"
+                                        style="font-weight: bold; color: rgb(255, 255, 255);"> </span>
+                                </p>
+
+                                <div id="textNotFollowers" style="font-size: smaller;"></div>
+
+                                <div id="Following-but-not-followers" style="font-size: smaller;"></div>
+
+                            </div>
+                            <div class="col-lg-12">
+                                <div id="pagination-Following-but-not-followers"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <br>
+    <br>
+
+    <!-- Footer -->
+    <footer class="fixed-bottom text-center text-secondary" style="background-color: black;">
+        <p class="mt-1" style="font-size: 12px;">
+            Developed by 
+            <a href="https://github.com/TheMIU" class="text-secondary text-decoration-none" target="_blank">
+                Kasun Miuranga
+            </a> 
+            &amp; 
+            <a href="https://github.com/0XDE57" class="text-secondary text-decoration-none" target="_blank">
+                Arbitrary Hexcode
+            </a> 
+            <i class="fa-regular fa-copyright"></i> 
+            <span id="year"></span>
+        </p>
+    </footer>
+
+
+    <!-- allFollowers Modal -->
+    <div id="allFollowersModal" class="modal bg-black bg-opacity-75" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-black text-white">
+                <div class="modal-header">
+                    <h6 style="color: chartreuse;" class="modal-title"><i class="fas fa-users"></i> All Followers
+                        <span style="color: white;" id="allFollowersCount"></span>
+                    </h6>
+                    <i class="fa-regular fa-circle-xmark" type="button" data-bs-dismiss="modal" aria-label="Close"></i>
+                </div>
+                <div class="modal-body">
+                    <div id="followers-div" style="font-size: smaller;"> all followers </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="pagination-followers-div"> pagination </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- allFollowings Modal -->
+    <div id="allFollowingsModal" class="modal bg-black bg-opacity-75" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-black text-white">
+                <div class="modal-header">
+                    <h6 style="color: chartreuse;" class="modal-title"><i class="fas fa-users"></i> All Followings
+                        <span style="color: white;" id="allFollowingsCount"></span>
+                    </h6>
+                    <i class="fa-regular fa-circle-xmark" type="button" data-bs-dismiss="modal" aria-label="Close"></i>
+                </div>
+                <div class="modal-body">
+                    <div id="followings-div" style="font-size: smaller;"> all followings </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="pagination-followings-div"> pagination </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- allFollowersFollowing Modal -->
+    <div id="allFollowersFollowingModal" class="modal bg-black bg-opacity-75" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-black text-white">
+                <div class="modal-header">
+                    <h6 style="color: chartreuse;" class="modal-title"><i class="fas fa-users"></i> All Followers
+                        <span style="color: white;" id="allFollowersFollowingCount"></span>
+                    </h6>
+                    <i class="fa-regular fa-circle-xmark" type="button" data-bs-dismiss="modal" aria-label="Close"></i>
+                </div>
+                <div class="modal-body">
+                    <div id="followersfollowing-div" style="font-size: smaller;"> all followers </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="pagination-followersfollowing-div"> pagination </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/be11977956.js" crossorigin="anonymous"></script>
+
+    <!-- sweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
